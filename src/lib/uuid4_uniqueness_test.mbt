@@ -1,3 +1,4 @@
+///|
 extern "js" fn seed() -> Bytes =
   #|() => {
   #|  const crypto = require('crypto');
@@ -9,12 +10,13 @@ extern "js" fn seed() -> Bytes =
   #|  return seed;
   #|};
 
+///|
 test "Uniqueness" {
   let set : @hashset.T[String] = @hashset.new()
   for i in 0..<10000 {
     let uuid = @lib.randomUUID(seed)
-    assert_false!(set.contains(uuid))
+    assert_false(set.contains(uuid))
     set.add(uuid)
   }
-  assert_eq!(set.size(), 10000)
+  assert_eq(set.size(), 10000)
 }

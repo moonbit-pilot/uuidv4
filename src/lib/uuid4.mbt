@@ -1,4 +1,8 @@
-let table = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f']
+///|
+let table = [
+  '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f',
+]
+
 ///|
 /// create version 4 UUID conforming to RFC4122
 /// ## Parameters
@@ -32,25 +36,23 @@ let table = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd
 ///   }
 /// }
 /// ```
-pub fn randomUUID(get_seed: () -> Bytes) -> String{
+pub fn randomUUID(get_seed : () -> Bytes) -> String {
   if get_seed().length() != 32 {
     abort("seed must be 32 bytes long")
   }
   let uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".to_array()
   for i in 0..<uuid.length() {
-    let seed = @bytes.from_iter(get_seed()
-      .to_array()
-      .map(fn(x) {x + i.to_byte()})
-      .iter()
+    let seed = @bytes.from_iter(
+      get_seed().to_array().map(fn(x) { x + i.to_byte() }).iter(),
     )
-    let mut randnum = @random.int(@random.new(seed = seed), limit = 15)
+    let mut randnum = @random.int(@random.new(seed~), limit=15)
     match uuid[i] {
       'x' => uuid[i] = table[randnum]
       'y' => {
-          // set variant conforming to RFC4122
-          randnum = randnum & 0b0011 | 0b1000
-          uuid[i] = table[randnum]
-        }
+        // set variant conforming to RFC4122
+        randnum = (randnum & 0b0011) | 0b1000
+        uuid[i] = table[randnum]
+      }
       _ => ()
     }
   }
